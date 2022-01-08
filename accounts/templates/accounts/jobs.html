@@ -1,0 +1,34 @@
+{%  extends 'accounts/main.html' %}
+
+{% block content %}
+
+		<br>
+
+		<div class="row">
+			<div class="col-md">
+				<div class="card card-body">
+					<h5>Jobs</h5>
+				</div>
+				<div class="card card-body">
+					<table class="table">
+						<tr>
+							<th>Product</th>
+							<th>Jobs</th>
+							<th>Price</th>
+						</tr>
+
+						{% for i in jobs %}
+							<tr>
+								<td>{{i.title}}</td>
+								<td>{{i.note}}</td>
+								<td>{{i.salary}}</td>
+							</tr>
+						{% endfor %}
+						
+					</table>
+				</div>
+			</div>
+			
+		</div>
+
+{% endblock content %}
