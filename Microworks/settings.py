@@ -130,6 +130,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'microworks3info@gmail.com'
-EMAIL_HOST_PASSWORD = 'Study@soft1'
+EMAIL_HOST_PASSWORD = '**********'
 EMAIL_PORT = 587
 ACCOUNT_EMAIL_VERIFICATION = 'none'
