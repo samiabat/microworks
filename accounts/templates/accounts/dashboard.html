@@ -10,7 +10,6 @@
 <style>
 	fieldset{
 		background-color: rgb(255, 255, 255);
-		/* border: 1px solid rgb(0, 0, 0); */
 		border-radius:10px;
 		font-size:small;
 		font-family:fantasy;
@@ -20,69 +19,16 @@
 
 	.card{
 		margin-left: 0px;
-		/* background-color:rgb(226, 142, 81); */
 		}
 </style>
 <br>
 
-<div class="row">
-	<!-- <div class="col-md-2">
-		<h5>CUSTOMERS:</h5>
-		<hr>
-		<div class="card card-body">
-			<a class="btn btn-primary  btn-sm btn-block" href="">Create Customer</a>
-			<table class="table table-sm">
-				<tr>
-					<th></th>
-					<th>Customer</th>
-					<th>Phone</th>
-				</tr>
-
-				{% for customer in customers %}
-					<tr>
-						<td><a class="btn btn-sm btn-info" href="{% url 'customer' customer.id %}">View</a></td>
-						 <td>{{customer.email}}</td>
-						<td><img class="profile-pic" src="{{request.user.customer.profile_pic.url}}" ></td>
-					</tr>
-				{% endfor %}
-
-			</table>
-		</div>
-	</div> -->
-	
+<div class="row">	
 	<div class="col-md-9">
 		<h5>JOBS</h5>
 		
 		<hr>
 		<div class="card card-body">
-			
-			<!-- <table class="table table-sm">
-				<tr>
-					<th>Product</th>
-					<th>Date Orderd</th>
-					<th>Note</th>
-					<th>Update</th>
-					<th>Remove</th>
-				</tr>
-				
-
-				{% for order in orders %}
-					<tr>
-						<td>{{order.product}}</td>
-						<td>{{order.date_created}}</td>
-						<td>{{order.note}}</td>
-						<td>{{order.customer}}</td>
-						<td><a class="btn btn-sm btn-info" href="{% url 'update_order' order.id %}">Update</a></td>
-
-						<td><a class="btn btn-sm btn-danger" href="{% url 'delete_order' order.id %}">Delete</a></td>
-
-					</tr>
-				{% endfor %}
-
-				<tr></tr>
-
-		
-			</table> -->
 			<a class="btn btn-sm btn-info align-content-center" href="{% url 'create_job' %}">Post Job</a>
 			{% for job in jobs %}
 				<fieldset>

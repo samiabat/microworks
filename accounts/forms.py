@@ -10,6 +10,11 @@ class CustomerForm(ModelForm):
 		model = Customer
 		fields = '__all__'
 		exclude = ['user']
+class EmployerForm(ModelForm):
+	class Meta:
+		model = Employer
+		fields = '__all__'
+		exclude = ['user']
 
 class JobForm(ModelForm):
 	class Meta:
@@ -20,10 +25,5 @@ class JobForm(ModelForm):
 class CreateUserForm(UserCreationForm):
 	class Meta:
 		model = User
-		fields = ['username', 'email', 'password1', 'password2']
-
-# class PostJobForm(ModelForm):
-# 	class Meta:
-# 		model = Job
-# 		fields = '__all__'
+		fields = ['username', 'first_name', 'email', 'password1', 'password2']
 

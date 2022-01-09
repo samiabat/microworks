@@ -133,3 +133,5 @@ EMAIL_HOST_USER = 'microworks3info@gmail.com'
 EMAIL_HOST_PASSWORD = 'Study@soft1'
 EMAIL_PORT = 587
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

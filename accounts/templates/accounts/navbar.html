@@ -29,16 +29,16 @@
   <span><img class="logo" src="{% static 'images/micro.png'%}" ></span>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
-      {{request.user.username}}
       {% if request.user.is_staff %}
       
       <li class="nav-item active">
         <a class="nav-link" href="{% url 'home' %}">Dashboard</a>
       </li>
+      
+      {% endif %}
       <li class="nav-item">
-        <a class="nav-link" href="#">Products</a>
+        <a class="nav-link" href="{% url 'account' %}">Profile</a>
       </li>
-      {% else %}
       <li class="nav-item active">
         <a class="nav-link" href="{% url 'home' %}">Microworks</a>
       </li>
@@ -57,13 +57,6 @@
       <li class="nav-item active">
         <a class="nav-link" href="{% url 'home' %}">Why Microworks?</a>
       </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'home' %}">Partners</a>
-      </li>
-       <!-- <li class="nav-item active">
-        <a class="nav-link" href="{% url 'account' %}">Settings</a>
-      </li> -->
-      {% endif %}
     </ul>
   </div>
 
