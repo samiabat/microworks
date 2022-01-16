@@ -61,7 +61,6 @@ They can chat within the website or with their own emails.
 ⇒ You don’t have access to update or delete the others posted jobs.
 
 # 2)Scalability:
-We have used Docker for containerization
 We have used :
 django ⇒version = 4.0
 Bootstrap ⇒version = 5
