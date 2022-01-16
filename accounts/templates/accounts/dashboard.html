@@ -1,13 +1,17 @@
 {%  extends 'accounts/main.html' %}
 
 {% load static %}
-
-{% block content %}
-
-{%  include 'accounts/status.html' %}
-
-
 <style>
+
+	h5{
+		display: inline;
+	}
+	i{
+		text-align: right;
+		align-items: center;
+		font-style: normal;
+		margin-left: 35em;
+	}
 	fieldset{
 		background-color: rgb(255, 255, 255);
 		border-radius:10px;
@@ -16,33 +20,53 @@
 		margin-left:20px;
 
 	}
+	p h1{
+		display: inline;
+	}
 
 	.card{
 		margin-left: 0px;
 		}
 </style>
+
+{% block content %}
+
 <br>
 
 <div class="row">	
 	<div class="col-md-9">
-		<h5>JOBS</h5>
+		<h5 class="btn btn-sm btn-info align-content-center">JOBS</h5>
 		
 		<hr>
 		<div class="card card-body">
-			<a class="btn btn-sm btn-info align-content-center" href="{% url 'create_job' %}">Post Job</a>
+			<a class="btn btn-sm btn-primary align-content-center" href="{% url 'create_job' %}">Post Job</a>
+			<hr>
 			{% for job in jobs %}
 				<fieldset>
-				<h5>{{job.title}}</h5>
+				<h5 style="display: inline;margin-right: 25rem;">{{job.title}}</h5>
+				{% if request.user.email in job.email %}
+				<small class="dropdown float-right"><a href="#" class="btn btn-primary btn-sm btn-block dropdown-toggle active float-right" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Detail</a>
+					<small class="dropdown-menu">
+						<li><a class="btn btn-sm btn-block btn-info" href="{% url 'proposals' job.id %}">Submitted proposal</a></li>
+						<li><a class="btn btn-sm btn-block btn-info" href="{% url 'update_job' job.id %}" > Update Posted Jobs</a></li>
+						<li><a class="btn btn-sm btn-block btn-danger" href="{% url 'delete_job' job.id %}"> Delete Posted Jobs</a></li>
+					</small>
+				</small>
+				{% else %}
+
+				<i class=" dropdown" text-align="right" ><a href="#" class="btn btn-primary btn-sm btn-block dropdown-toggle active" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Detail  <span class="caret"></span></a>
+					<i class="dropdown-menu">
+						<li><a class="btn sm btn-sm btn-info" href="{% url 'apply' job.id %}">Submitted proposal</a></li>
+					</i>
+				</i>
+				{% endif %}
 				<hr>
-					<p>{{job.note}}</p>
+					<p>{{job.description}}</p>
+					<p>please use thejob code under when you fill the form <h1>{{job.jobCode}}</h1></p>
 					<p>${{job.salary}}
-					{{job.status}}
+					{{job.status }} the job posted by, {{job.customer}} {{job.date_created}} 
+					</p>
 					
-					<a class="btn btn-sm btn-info align-content-center" href="{% url 'update_job' job.id %}">Update</a>
-					<a class="btn sm btn-sm btn-danger" href="{% url 'delete_job' job.id %}">Delete</a>
-					
-					<p>by, {{job.customer}}</p>
-					{{job.date_created}}
 				<hr>
 			</fieldset>
 			{% endfor %}
@@ -51,18 +75,18 @@
 	</div>
 
 	<div class="col-md-3">
-		<h5>CUSTOMERS:</h5>
+		<h5>Jobs:</h5>
 		<hr>
 		<div class="card card-body">
-			<a class="btn btn-primary  btn-sm btn-block" href="">Create Customer</a>
+			<a class="btn btn-primary  btn-sm btn-block" href="">Create Job</a>
 			<table class="table table-sm">
 				<tr>
 					<th></th>
-					<th>Customer</th>
+					<th>User</th>
 					<th>Phone</th>
 				</tr>
 
-				{% for customer in customers %}
+				{% for job in customers %}
 					<tr>
 						<td><a class="btn btn-sm btn-info" href="{% url 'customer' customer.id %}">View</a></td>
 						<!-- <td>{{customer.email}}</td> -->
@@ -75,15 +99,7 @@
 	</div>
 
 </div>
-<script class="js">
-	$(document).ready(function(){
-    $("#anythingSearch").on("keyup", function() {
-      var value = $(this).val().toLowerCase();
-      $("#myDIV *").filter(function() {
-        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-      });
-    });
-  });
-</script>
+
+
 {% endblock %}
 

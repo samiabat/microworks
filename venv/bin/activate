@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/oem/የወረዱ/m/crash-course-CRM-Part-20-Password-Reset-Email/resereve/crm1/microworks/venv"
+VIRTUAL_ENV="/home/oem/የወረዱ/m/crash-course-CRM-Part-20-Password-Reset-Email/resereve/crm1/ok/l/microworks1 (copy)/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

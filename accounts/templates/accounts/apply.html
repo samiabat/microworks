@@ -1,0 +1,91 @@
+{%  extends 'accounts/main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+<style>
+
+	h5{
+		display: inline;
+	}
+	i{
+		text-align: right;
+		background-color: red;
+		align-items: center;
+		font-style: normal;
+		margin-left: 35em;
+	}
+	fieldset{
+		background-color: rgb(255, 255, 255);
+		border-radius:10px;
+		font-size:small;
+		font-family:fantasy;
+		margin-left:20px;
+
+	}
+
+	.card{
+		margin-left: 0px;
+		}
+</style>
+<br>
+
+<div class="row">	
+	<div class="col-md-9">
+		<h5 class="btn btn-sm btn-info align-content-center">JOBS</h5>
+		
+		<hr>
+		<div class="card card-body">
+            <h3>Your jobs</h3>
+                    <hr>
+			{% for job in jobs %}
+				<fieldset>
+                    {% if request.user.email in job.email %}
+                            <h5>{{job.title}}</h5>
+                            <p>{{job.description}}</p>
+                            <h6>Submitted proposals</h6>
+                            {% for proposal in proposals %}
+                                {% if proposal.jobCode in job.jobCode %}
+                                
+                                    <h5>{{proposal.jobApplyer}}</h5>
+                                    <p>{{proposal.proposal}} <a href="#">Message</a></p>
+                                    
+                                {% endif %}
+                                <hr>
+                            {% endfor %}
+                    {% endif %}
+				<hr>
+			</fieldset>
+			{% endfor %}
+			
+		</div>
+	</div>
+
+	<div class="col-md-3">
+		<h5>CUSTOMERS:</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-primary  btn-sm btn-block" href="">Create Customer</a>
+			<table class="table table-sm">
+				<tr>
+					<th></th>
+					<th>Customer</th>
+					<th>Phone</th>
+				</tr>
+
+				{% for customer in customers %}
+					<tr>
+						<td><a class="btn btn-sm btn-info" href="{% url 'customer' customer.id %}">View</a></td>
+						<!-- <td>{{customer.email}}</td> -->
+						<td><img class="profile-pic" src="{{request.user.customer.profile_pic.url}}" ></td>
+					</tr>
+				{% endfor %}
+
+			</table>
+		</div>
+	</div>
+
+</div>
+{% endblock %}

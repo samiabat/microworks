@@ -13,8 +13,7 @@ from django.contrib.auth.models import Group
 # Create your views here.
 from .models import *
 from .forms import*
-from .filters import*
-from .decorators import unauthenticated_user, allowed_users, admin_only
+from .decorators import*
 
 @unauthenticated_user
 def registerPage(request):
@@ -24,9 +23,12 @@ def registerPage(request):
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=password)
             login(request, user)
+            user.email = request.user.email
+            print(user.email)
             return redirect('home')
         
 
@@ -55,11 +57,13 @@ def logoutUser(request):
     logout(request)
     return redirect('login')
 
-@login_required(login_url='login')
+@unauthenticated_user
 def home(request):
+    return render(request, 'accounts/home.html')
+
+@login_required(login_url='login')
+def dashboard(request):
     jobs = Job.objects.all().order_by('-date_created')
-    customers = Customer.objects.all()
-    total_customers = customers.count()
 
     
     context = {'jobs':jobs}
@@ -79,11 +83,12 @@ def userPage(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['customer'])
 def accountSettings(request):
+    print(request.user.email)
     customer = request.user.customer
     form = CustomerForm(instance=customer)
 
     if request.method == 'POST':
-        form = CustomerForm(request.POST, request.FILES,instance=customer)
+        form = CustomerForm(request.POST, request.FILES, instance=customer)
         if form.is_valid():
             form.save()
 
@@ -91,29 +96,11 @@ def accountSettings(request):
     context = {'form':form}
     return render(request, 'accounts/account_settings.html', context)
 
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['admin'])
-def customer(request, pk_test):
-    customer = Customer.objects.get(id=pk_test)
-
-    jobs = customer.job_set.all()
-    job_count = jobs.count()
-
-    myFilter = JobFilter(request.GET, queryset=jobs)
-    jobs = myFilter.qs 
-
-    context = {'customer':customer, 'jobs':jobs, 'job_count':job_count,
-    'myFilter':myFilter}
-    return render(request, 'accounts/customer.html',context)
-
-
-
-
 @login_required(login_url='login')
 def createJob(request):
     jobs_list = Job.objects.order_by('date_created')
     if request.method == "POST":
+        username = request.POST.get('username')
         data = request.POST
         job_form = JobForm(data)
         if job_form.is_valid():
@@ -155,3 +142,30 @@ def deleteJob(request, pk):
         
     context = {'item':job}
     return render(request, 'accounts/delete.html', context)
+
+@login_required(login_url='login')
+def submitProposal(request, pk):
+    job = get_object_or_404(Job, id=pk)
+    proposal = Proposal.objects.all()
+    if request.method == "POST":
+        data = request.POST
+        proposal_form = ProposalForm(data)
+        if proposal_form.is_valid():
+            proposal_form.val = pk
+            proposal = proposal_form.save()
+            proposal.save()
+            return redirect('home')
+    proposal_form = ProposalForm()
+    context = {
+        "forms": proposal_form
+    }
+    return render(request, 'accounts/proposal.html', context)
+
+def proposal_list(request, pk):
+    proposals = Proposal.objects.all()
+    jobs = Job.objects.all().order_by('-date_created')
+
+    
+    context = {'proposals':proposals, 'jobs':jobs}
+    return render(request, 'accounts/apply.html', context)
+

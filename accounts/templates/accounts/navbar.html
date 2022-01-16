@@ -8,39 +8,33 @@
     margin-right: 20px;
   }
 
+
+
   .profile-pic{
 		max-width: 30px;
 		max-height:30px;
 		margin: 0 auto;
 		border-radius: 50%;
 	} 
-  .logo{
-		max-width: 60px;
-		max-height:60px;
-		margin: 0 auto;
-		border-radius: 50%;
-	} 
+  li a, span a,.hello-msg {
+    font-size:0.8rem;
+    color: #fff;
+    text-decoration: none;
+  }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <span><img class="logo" src="{% static 'images/micro.png'%}" ></span>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
-      {% if request.user.is_staff %}
-      
+      {% if request.user.is_authenticated %}
       <li class="nav-item active">
-        <a class="nav-link" href="{% url 'home' %}">Dashboard</a>
+        <a class="nav-link active" href="{% url 'home' %}">Dashboard</a>
       </li>
-      
-      {% endif %}
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'account' %}">Profile</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'home' %}">Microworks</a>
+        <a class="nav-link active" href="{% url 'account' %}">Profile</a>
       </li>
       <li class = "nav-item">
         <form class="d-flex">
@@ -48,22 +42,36 @@
           
           </form>
       </li>
+      {% endif %}
       <li class="nav-item active">
-        <a class="nav-link" href="{% url 'home' %}">Home</a>
+        <a class="nav-link active" href="{% url 'home' %}">Home</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="{% url 'home' %}">Browse Jobs</a>
+        <a class="nav-link active" href="{% url 'home' %}">Browse Jobs</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="{% url 'home' %}">Why Microworks?</a>
+        <a class="nav-link active" href="{% url 'home' %}">Why Microworks?</a>
       </li>
-    </ul>
+    {% if request.user.id is None %}
+    <li class = "nav-item">
+      <form class="d-flex">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        
+        </form>
+    </li>
+    {% endif %}
+  </ul>
   </div>
 
   
-
+{% if request.user.is_authenticated %}
   <span class="hello-msg">Hello, {{request.user}}</span>
-  <span ><a  class="hello-msg" href="{% url 'logout' %}">Logout</a></span>
+  <a class="btn btn-sm btn-primary align-content-center" href="{% url 'create_job' %}">Post Job</a>
+  <span><a class="btn btn-sm btn-danger align-content-center" href="{% url 'logout' %}">Log Out</a></span>
   <span><img class="profile-pic" src="{{request.user.customer.profile_pic.url}}" ></span>
+  {% else %}
+  <a class="btn btn-sm btn-primary align-content-center" href="{% url 'login' %}">Login</a>
+  <span><a class="btn btn-sm btn-danger align-content-center" href="{% url 'register' %}">Sign Up</a></span>
+  {% endif %}
 
 </nav>

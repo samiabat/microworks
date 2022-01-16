@@ -7,15 +7,18 @@ from . import views
 
 
 urlpatterns = [
+    path('proposals/<str:pk>', views.proposal_list, name = "proposals"),
+    path('apply/<str:pk>', views.submitProposal, name='apply'),
 	path('register/', views.registerPage, name="register"),
 	path('login/', views.loginPage, name="login"),  
 	path('logout/', views.logoutUser, name="logout"),
 
-    path('', views.home, name="home"),
+    path('',views.home, name = 'dash'),
+    path('dashboard/', views.dashboard, name="home"),
     path('user/', views.userPage, name="user-page"),
 
     path('account/', views.accountSettings, name="account"),
-    path('customer/<str:pk_test>/', views.customer, name="customer"),
+    # path('customer/<str:pk_test>/', views.customer, name="customer"),
 
     path('create_job/', views.createJob, name="create_job"),
     path('update_job/<str:pk>/', views.updateJob, name="update_job"),

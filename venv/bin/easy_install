@@ -1,4 +1,6 @@
-#!/home/oem/የወረዱ/m/crash-course-CRM-Part-20-Password-Reset-Email/resereve/crm1/microworks/venv/bin/python3
+#!/bin/sh
+'''exec' "/home/oem/የወረዱ/m/crash-course-CRM-Part-20-Password-Reset-Email/resereve/crm1/ok/l/microworks1 (copy)/venv/bin/python3" "$0" "$@"
+' '''
 # -*- coding: utf-8 -*-
 import re
 import sys

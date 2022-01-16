@@ -8,7 +8,7 @@ alias deactivate 'test $?_OLD_VIRTUAL_PATH != 0 && setenv PATH "$_OLD_VIRTUAL_PA
 # Unset irrelevant variables.
 deactivate nondestructive
 
-setenv VIRTUAL_ENV "/home/oem/የወረዱ/m/crash-course-CRM-Part-20-Password-Reset-Email/resereve/crm1/microworks/venv"
+setenv VIRTUAL_ENV "/home/oem/የወረዱ/m/crash-course-CRM-Part-20-Password-Reset-Email/resereve/crm1/ok/l/microworks1 (copy)/venv"
 
 set _OLD_VIRTUAL_PATH="$PATH"
 setenv PATH "$VIRTUAL_ENV/bin:$PATH"

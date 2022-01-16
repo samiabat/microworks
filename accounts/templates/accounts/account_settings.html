@@ -1,5 +1,6 @@
 {%  extends 'accounts/main.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
 
 <style>
@@ -34,7 +35,7 @@
 			
 			<form method="POST" action="" enctype="multipart/form-data">
 				{% csrf_token %}
-				{{form.as_p}}
+				{{form|crispy}}
 		
 			<input class="btn btn-primary" type="submit" name="Update Information">
 			</form>

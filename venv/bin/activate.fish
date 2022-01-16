@@ -29,7 +29,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/oem/የወረዱ/m/crash-course-CRM-Part-20-Password-Reset-Email/resereve/crm1/microworks/venv"
+set -gx VIRTUAL_ENV "/home/oem/የወረዱ/m/crash-course-CRM-Part-20-Password-Reset-Email/resereve/crm1/ok/l/microworks1 (copy)/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

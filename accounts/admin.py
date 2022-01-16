@@ -6,3 +6,4 @@ from .models import *
 
 admin.site.register(Customer)
 admin.site.register(Job)
+admin.site.register(Proposal)
