@@ -3,7 +3,7 @@ follow the instruction
   # create new directry called basedir
   mkdir basedir
   # get into that path
-  cd microwork
+  cd basedir
   # clone the code
   git clone https://github.com/samiabat/microworks/
   # get into this new directory
@@ -16,6 +16,14 @@ follow the instruction
   pip install -r requirements.txt
 # run the server
   python manage.py runserver
+# create mysql database on mysql command shell
+## create database microworks;
+# then configure the created database(microworks) in the setting.py
+# then get in to mysql command shell then type the following commands
+## use microworks;
+## insert into auth_group(name)values('customer');
+# Every thing will be OK
+
   
 
 
