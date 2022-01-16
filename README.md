@@ -71,4 +71,12 @@ MySQL database
 ## ⇒We hope that we will work collaboratively and reach out  this web application to the product stage. 
 ## ⇒We hope that we will develop this ecommerce platform using Angular for frontend framework and Django RESTFUL API for backend framework.
 # Thank you!
+# Our contact Address
+Name                                                             email                                                 phone
+#
+1, Samuel Abatneh                     samuelabatneh21@gmail.com                         0921936070
+#
+2, Sefineh Tesfa                          sefinehtesfa34@gmail.com                              0920627634
+#
+3, Zenamarkos Molla                  zienamarkos78@gmail.com                              0978070107  
 
