@@ -19,10 +19,6 @@ follow the instruction
 # create mysql database on mysql command shell
 create database microworks;
 # Next configure the created database(microworks) in the setting.py
-# Next get in to mysql command shell then type the following commands
-use microworks;
-insert into auth_group(name)values('customer');
-# Every thing will be OK
 
   
 
