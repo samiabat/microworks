@@ -7,7 +7,12 @@ from .models import*
 
 def customer_profile(sender, instance, created, **kwargs):
 	if created:
-		group = Group.objects.get(name='customer')
+		try:
+            		group = Group.objects.get(name='customer')
+        	except:
+            		group = Group(name="customer")
+            		group.save()
+            		group = Group.objects.get(name="customer")
 		instance.groups.add(group)
 		Customer.objects.create(
 			user=instance,
