@@ -1,171 +1,177 @@
-from django.shortcuts import render, redirect, get_object_or_404 
-from django.http import HttpResponse
-from django.forms import inlineformset_factory
-from django.contrib.auth.forms import UserCreationForm
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 
-from django.contrib.auth import authenticate, login, logout
+from rest_framework.decorators import api_view, permission_classes
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
+from django.http.response import JsonResponse
 
-from django.contrib import messages
+from .models import Job, Proposal
+from .serializer import CustomerSerializer, JobSerializer, ProposalSerializer
 
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
 
-# Create your views here.
-from .models import *
-from .forms import*
-from .decorators import*
 
-@unauthenticated_user
-def registerPage(request):
-    form = CreateUserForm()
-    if request.method == 'POST':
-        form = CreateUserForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            email = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=password)
-            login(request, user)
-            user.email = request.user.email
-            print(user.email)
-            return redirect('home')
-        
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def profileApi(request, format=None):
+    if request.user!="AnonymousUser":
+        try:
+            content = {
+                'user': str(request.user),
+                'role': str(request.user.groups.all()[0]),  
+            }
+            return Response(content)
+        except:
+            content = {
+                'user': str(request.user),
+                'role': "admin",  
+            }
+            return Response(content)
+    
 
-    context = {'form':form}
-    return render(request, 'accounts/register.html', context)
 
-@unauthenticated_user
-def loginPage(request):
 
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password =request.POST.get('password')
-
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            login(request, user)
-            return redirect('home')
+@csrf_exempt
+@api_view (['GET', 'POST', 'DELETE', 'PUT'])
+def customerApi(request, pk=-1):
+    if request.method == "GET":
+        if pk==-1:
+            users = User.objects.all()
+            users_serializer = CustomerSerializer(users, many=True)
+            return JsonResponse(users_serializer.data, safe=False)
         else:
-            messages.info(request, 'Username OR password is incorrect')
-
-    context = {}
-    return render(request, 'accounts/login.html', context)
-
-def logoutUser(request):
-    logout(request)
-    return redirect('login')
-
-@unauthenticated_user
-def home(request):
-    return render(request, 'accounts/home.html')
-
-@login_required(login_url='login')
-def dashboard(request):
-    jobs = Job.objects.all().order_by('-date_created')
-
-    
-    context = {'jobs':jobs}
-    return render(request, 'accounts/dashboard.html', context)
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['customer'])
-def userPage(request):
-    jobs = request.user.customer.job_set.all()
-
-    total_jobs = jobs.count()
-
-    context = {'jobs':jobs, 'total_jobs':total_jobs}
-    return render(request, 'accounts/user.html', context)
-
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['customer'])
-def accountSettings(request):
-    print(request.user.email)
-    customer = request.user.customer
-    form = CustomerForm(instance=customer)
-
-    if request.method == 'POST':
-        form = CustomerForm(request.POST, request.FILES, instance=customer)
-        if form.is_valid():
-            form.save()
-
-
-    context = {'form':form}
-    return render(request, 'accounts/account_settings.html', context)
-
-@login_required(login_url='login')
-def createJob(request):
-    jobs_list = Job.objects.order_by('date_created')
-    if request.method == "POST":
-        username = request.POST.get('username')
-        data = request.POST
-        job_form = JobForm(data)
-        if job_form.is_valid():
-            job = job_form.save()
-            job.save()
-            return redirect('home')
-    job_form = JobForm()
-    context = {
-        "form": job_form,
-        "jobs": jobs_list,
-    }
-    return render(request, 'accounts/job_form.html', context)
-
-
-
-@login_required(login_url='login')
-#@allowed_users(allowed_roles=['admin'])
-def updateJob(request, pk):
-    job = get_object_or_404(Job, id=pk)
-    form = JobForm(instance=job)
-    if request.method == 'POST':
-
-        form = JobForm(request.POST, instance=job)
-        if form.is_valid():
-            form.save()
-            return redirect('/')
-
-    context = {'form':form}
-    return render(request, 'accounts/job_form.html', context)
-
-
-@login_required(login_url='login')
-def deleteJob(request, pk):
-    job = get_object_or_404(Job, id=pk)
-    if request.method=="POST":
-        job.delete()
-        return redirect('home')
-
+            try:
+                user = User.objects.get(id=pk)
+                if user is not None:
+                    user_serializer = CustomerSerializer(user)
+                    return JsonResponse(user_serializer.data, safe=False)
+            except:
+                return JsonResponse("No Such User!", safe=False) 
         
-    context = {'item':job}
-    return render(request, 'accounts/delete.html', context)
-
-@login_required(login_url='login')
-def submitProposal(request, pk):
-    job = get_object_or_404(Job, id=pk)
-    proposal = Proposal.objects.all()
-    if request.method == "POST":
-        data = request.POST
-        proposal_form = ProposalForm(data)
-        if proposal_form.is_valid():
-            proposal_form.val = pk
-            proposal = proposal_form.save()
-            proposal.save()
-            return redirect('home')
-    proposal_form = ProposalForm()
-    context = {
-        "forms": proposal_form
-    }
-    return render(request, 'accounts/proposal.html', context)
-
-def proposal_list(request, pk):
-    proposals = Proposal.objects.all()
-    jobs = Job.objects.all().order_by('-date_created')
-
+    elif request.method == "POST":
+        customer_data = JSONParser().parse(request)
+        try :
+            other_customer = User.objects.get(username = customer_data["username"])
+            if other_customer:
+                return JsonResponse("The User Name Already Exist!", safe=False)
+        except:
+            customer_data["password"] = make_password(customer_data["password"])
+            customer_serializer = CustomerSerializer(data=customer_data)
+            if customer_serializer.is_valid():
+                customer_serializer.save()
+                return JsonResponse("User Register Sucessfully!", status=201, safe=False)
+            return JsonResponse("Failed To Register!", status=400, safe=False)
     
-    context = {'proposals':proposals, 'jobs':jobs}
-    return render(request, 'accounts/apply.html', context)
+    elif request.method == "PUT":
+        customer_data = JSONParser().parse(request)
+        try:
+            customer = User.objects.get(id = pk)
+            customer_data["password"] = make_password(customer_data["password"])
+            customer_serializer = CustomerSerializer(customer, data=customer_data)
+            if customer_serializer.is_valid():
+                customer_serializer.save()
+                return JsonResponse("Data Updated Sucessfully!", safe=False)
+            return JsonResponse("Unable To Update!", safe=False)
+        except:
+            return JsonResponse("The Same ID Is Already In Use!", safe=False)
+    elif request.method == "DELETE":
+        try:
+            customer = User.objects.get(id=pk)
+            if customer:
+                customer.delete()
+                return JsonResponse("Data Deleted Sucessfully!", safe=False)
+        except:
+            return JsonResponse("No Such User!", safe=False)
 
+
+@csrf_exempt
+@api_view (['GET', 'POST', 'DELETE', 'PUT'])
+@permission_classes([IsAuthenticated])
+def jobApi(request, pk=-1):
+    if request.method == "GET":
+        if pk==-1:
+            jobs = Job.objects.all().order_by('-date_created')
+            jobs_serializer = JobSerializer(jobs, many=True)
+            return JsonResponse(jobs_serializer.data, safe=False)
+        else:
+            try:
+                job = Job.objects.get(id=pk)
+                if job is not None:
+                    job_serializer = JobSerializer(job)
+                    return JsonResponse(job_serializer.data, safe=False)
+            except:
+                return JsonResponse("No Such Job!", safe=False) 
+        
+    elif request.method == "POST":
+        job_data = JSONParser().parse(request)
+        job_serializer = JobSerializer(data=job_data)
+        if job_serializer.is_valid():
+            job_serializer.save()
+            return JsonResponse("Job Posted Sucessfully!", status=201, safe=False)
+        return JsonResponse("Failed To Post!", status=400, safe=False)
+    elif request.method == "PUT":
+        job_data = JSONParser().parse(request)
+        try:
+            job = Job.objects.get(id=pk)
+            job_serializer = JobSerializer(job, data=job_data)
+            if job_serializer.is_valid():
+                job_serializer.save()
+                return JsonResponse("job Update Sucessfully!", safe=False)
+        except:
+            return JsonResponse("Failed To Update!", safe=False)
+    elif request.method == "DELETE":
+        try:
+            print(id)
+            job = Job.objects.get(id=pk)
+            if job is not None:
+                job.delete()
+                return JsonResponse("job Deleted Sucessfully!", safe=False)
+        except:
+            return JsonResponse("No Such job!", safe=False)
+
+
+@csrf_exempt
+@api_view (['GET', 'POST', 'DELETE', 'PUT'])
+@permission_classes([IsAuthenticated])
+def proposalApi(request, pk=-1):
+    if request.method == "GET":
+        if pk==-1:
+            proposals = Proposal.objects.all()
+            proposal_serializer = ProposalSerializer(proposals, many=True)
+            return JsonResponse(proposal_serializer.data, safe=False)
+        else:
+            try:
+                proposal = Proposal.objects.get(id=pk)
+                if proposal is not None:
+                    proposal_serializer = ProposalSerializer(proposal)
+                    return JsonResponse(proposal_serializer.data, safe=False)
+            except:
+                return JsonResponse("No Such Proposal!", safe=False) 
+        
+    elif request.method == "POST":
+        proposal_data = JSONParser().parse(request)
+        proposal_serializer = ProposalSerializer(data=proposal_data)
+        if proposal_serializer.is_valid():
+            proposal_serializer.save()
+            return JsonResponse("Proposal submitted successfully!", status=201, safe=False)
+        return JsonResponse("Failed To submit!", status=400, safe=False)
+    elif request.method == "PUT":
+        proposal_data = JSONParser().parse(request)
+        try:
+            proposal = Proposal.objects.get(id=pk)
+            proposal_serializer = ProposalSerializer(proposal, data=proposal_data)
+            if proposal_serializer.is_valid():
+                proposal_serializer.save()
+                return JsonResponse("Proposal Update Sucessfully!", safe=False)
+        except:
+            return JsonResponse("Failed To Update!", safe=False)
+    elif request.method == "DELETE":
+        try:
+            proposal = Proposal.objects.get(id=pk)
+            if proposal is not None:
+                proposal.delete()
+                return JsonResponse("Proposal Deleted Sucessfully!", safe=False)
+        except:
+            return JsonResponse("No Such Proposal!", safe=False)

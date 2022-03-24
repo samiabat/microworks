@@ -1,52 +1,27 @@
 from django.urls import path
-
 from django.contrib.auth import views as auth_views
-
 from . import views
+from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 
 
 urlpatterns = [
-    path('proposals/<str:pk>', views.proposal_list, name = "proposals"),
-    path('apply/<str:pk>', views.submitProposal, name='apply'),
-	path('register/', views.registerPage, name="register"),
-	path('login/', views.loginPage, name="login"),  
-	path('logout/', views.logoutUser, name="logout"),
-
-    path('',views.home, name = 'dash'),
-    path('dashboard/', views.dashboard, name="home"),
-    path('user/', views.userPage, name="user-page"),
-
-    path('account/', views.accountSettings, name="account"),
-    # path('customer/<str:pk_test>/', views.customer, name="customer"),
-
-    path('create_job/', views.createJob, name="create_job"),
-    path('update_job/<str:pk>/', views.updateJob, name="update_job"),
-    path('delete_job/<str:pk>/', views.deleteJob, name="delete_job"),
-
-    path('reset_password/',
-     auth_views.PasswordResetView.as_view(template_name="accounts/password_reset.html"),
-     name="reset_password"),
-
-    path('reset_password_sent/', 
-        auth_views.PasswordResetDoneView.as_view(template_name="accounts/password_reset_sent.html"), 
-        name="password_reset_done"),
-
-    path('reset/<uidb64>/<token>/',
-     auth_views.PasswordResetConfirmView.as_view(template_name="accounts/password_reset_form.html"), 
-     name="password_reset_confirm"),
-
-    path('reset_password_complete/', 
-        auth_views.PasswordResetCompleteView.as_view(template_name="accounts/password_reset_done.html"), 
-        name="password_reset_complete"),
-
-
+    path('profile/', views.profileApi, name = 'profile'),
+    path('proposals/', views.proposalApi, name = "proposals"),
+    path('proposals/<str:pk>/', views.proposalApi, name = "proposals"),
+    path('jobs/', views.jobApi, name = "jobs"),
+    path('jobs/<str:pk>/', views.jobApi, name = "jobs"),
+    path('customers/', views.customerApi, name = "customer"),
+    path('customers/<str:pk>/', views.customerApi, name = "customer"),
+    path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
 ]
 
-'''
-1 - Submit email form                         //PasswordResetView.as_view()
-2 - Email sent success message                //PasswordResetDoneView.as_view()
-3 - Link to password Rest form in email       //PasswordResetConfirmView.as_view()
-4 - Password successfully changed message     //PasswordResetCompleteView.as_view()
-'''
+
+urlpatterns = format_suffix_patterns(urlpatterns)
