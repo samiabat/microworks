@@ -14,10 +14,15 @@ class Job(models.Model):
 	status = models.CharField(max_length=200, null=True, choices=STATUS)
 	salary = models.IntegerField(null=True)
 
+	def __str__(self):
+		return self.title
+
+
 
 class Proposal(models.Model):
 	jobApplyer = models.CharField(max_length = 50, null = True)
 	proposal = models.TextField(null=True)
-	email = models.EmailField(max_length = 50, null = True)
 	job = models.ForeignKey(Job, on_delete=models.CASCADE)
+	date_created = models.DateTimeField(auto_now_add=True, null=True)
+
 

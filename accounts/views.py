@@ -138,7 +138,7 @@ def jobApi(request, pk=-1):
 def proposalApi(request, pk=-1):
     if request.method == "GET":
         if pk==-1:
-            proposals = Proposal.objects.all()
+            proposals = Proposal.objects.all().order_by('-date_created')
             proposal_serializer = ProposalSerializer(proposals, many=True)
             return JsonResponse(proposal_serializer.data, safe=False)
         else:
@@ -175,3 +175,26 @@ def proposalApi(request, pk=-1):
                 return JsonResponse("Proposal Deleted Sucessfully!", safe=False)
         except:
             return JsonResponse("No Such Proposal!", safe=False)
+
+
+@csrf_exempt
+@api_view (['GET'])
+@permission_classes([IsAuthenticated])
+def getCustomerByUserName(request, user):
+    try:
+        customer = User.objects.get(username = user)
+        customerSerializer = CustomerSerializer(customer)
+        return JsonResponse(customerSerializer.data, safe=False)
+    except:
+        return JsonResponse("Not Authenticated!", safe=False)
+
+@csrf_exempt
+@api_view (['GET'])
+@permission_classes([IsAuthenticated])
+def getProposalByJob(request, job):
+    try:
+        proposals = User.objects.filter(job = job)
+        proposal_serializer = ProposalSerializer(proposals, many=True)
+        return JsonResponse(proposal_serializer.data, safe=False)
+    except:
+        return JsonResponse("Not Authenticated!", safe=False)
