@@ -6,10 +6,11 @@ from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
+from django.db.models import Q, Count
 from django.http.response import JsonResponse
 
-from .models import Job, Proposal
-from .serializer import CustomerSerializer, JobSerializer, ProposalSerializer
+from .models import Job, Proposal, Review, Report
+from .serializer import CustomerSerializer, JobSerializer, MessageSerializer, ProposalSerializer, ReportSerializer, ReviewSerializer # ReportSerializer, ReviewSerializer
 
 
 
@@ -21,6 +22,7 @@ def profileApi(request, format=None):
             content = {
                 'user': str(request.user),
                 'role': str(request.user.groups.all()[0]),  
+                'id': str(request.user.id),
             }
             return Response(content)
         except:
@@ -177,24 +179,113 @@ def proposalApi(request, pk=-1):
             return JsonResponse("No Such Proposal!", safe=False)
 
 
-@csrf_exempt
-@api_view (['GET'])
-@permission_classes([IsAuthenticated])
-def getCustomerByUserName(request, user):
-    try:
-        customer = User.objects.get(username = user)
-        customerSerializer = CustomerSerializer(customer)
-        return JsonResponse(customerSerializer.data, safe=False)
-    except:
-        return JsonResponse("Not Authenticated!", safe=False)
 
 @csrf_exempt
 @api_view (['GET'])
 @permission_classes([IsAuthenticated])
-def getProposalByJob(request, job):
+def getProposalByJob(job):
     try:
         proposals = User.objects.filter(job = job)
         proposal_serializer = ProposalSerializer(proposals, many=True)
         return JsonResponse(proposal_serializer.data, safe=False)
     except:
         return JsonResponse("Not Authenticated!", safe=False)
+
+@csrf_exempt
+@api_view (['GET'])
+@permission_classes([IsAuthenticated])
+def getReview(id):
+    try:
+        review = Review.objects.annotate(
+        totalReview=Count('reviews', filter=Q(reviews__jobPoster=id))
+        )
+        return JsonResponse(review, safe=False)
+    except:
+        return JsonResponse("Not Authenticated!", safe=False)
+
+@csrf_exempt
+@api_view (['GET'])
+@permission_classes([IsAuthenticated])
+def getReport(id):
+    try:
+        report = Report.objects.annotate(
+        totalReport=Count('reports', filter=Q(reports__jobPoster=id))
+        )
+        return JsonResponse(report, safe=False)
+    except:
+        return JsonResponse("Not Authenticated!", safe=False)
+
+
+
+
+
+@csrf_exempt
+@api_view (['POST'])
+@permission_classes([IsAuthenticated])
+def review(request):
+    review_data = JSONParser().parse(request)
+    try :
+        other_review = Review.objects.get(jobPoster = review_data["jobPoster"], job = review_data["job"])
+        if other_review:
+            return JsonResponse("You have already reviewed!", safe=False)
+    except:
+        review_serializer = ReviewSerializer(data=review_data)
+        if review_serializer.is_valid():
+            review_serializer.save()
+            return JsonResponse("Your review submitted succusfully!", status=201, safe=False)
+        return JsonResponse("Something went wrong!", status=400, safe=False)
+
+@csrf_exempt
+@api_view (['POST'])
+@permission_classes([IsAuthenticated])
+def report(request):
+    report_data = JSONParser().parse(request)
+    report = Report.objects.filter(jobPoster=report_data["jobPoster"], job=report_data["job"]).count()
+    if report!=0:
+        return JsonResponse("You have already reported!", safe=False)
+    else:
+        report_serializer = ReportSerializer(data=report_data)
+        if report_serializer.is_valid():
+            report_serializer.save()
+            return JsonResponse("Your report submitted succusfully!", status=201, safe=False)
+        return JsonResponse("Something went wrong!", status=400, safe=False)
+        
+
+def getUserByusername(request, username):
+    try:
+        user = User.objects.get(username=username)
+        users_serializer = CustomerSerializer(user)
+        return JsonResponse(users_serializer.data, safe=False)
+    except:
+        return JsonResponse("Something went wrong!", safe=False)
+
+@csrf_exempt
+@api_view (['GET'])
+@permission_classes([IsAuthenticated])
+def reporting(request, id):
+    report = Report.objects.filter(jobPoster=id).count()
+    return JsonResponse(report, safe=False)
+
+
+@csrf_exempt
+@api_view (['POST'])
+@permission_classes([IsAuthenticated])
+def message(request):
+    message_data = JSONParser().parse(request)
+    message_serializer = MessageSerializer(data=message_data)
+    if message_serializer.is_valid():
+        message_serializer.save()
+        return JsonResponse("message sent!", status=201, safe=False)
+    return JsonResponse("Something went wrong!", status=400, safe=False)
+
+@csrf_exempt
+@api_view (['GET'])
+@permission_classes([IsAuthenticated])
+def getMessage(someone):
+    try:
+        messages = User.objects.filter(jobPoster = someone)
+        message_serializer = MessageSerializer(messages, many=True)
+        return JsonResponse(message_serializer.data, safe=False)
+    except:
+        return JsonResponse("Not Authenticated!", safe=False)
+

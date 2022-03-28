@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'Microworks.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fin',
+        'NAME': 'microworks',
         'USER': 'samuelabatneh',
         'PASSWORD': 'bosena',
         'HOST': 'localhost',
