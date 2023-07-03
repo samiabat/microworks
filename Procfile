@@ -1,1 +1,1 @@
-web: gunicorn Microworks.wsgi
+gunicorn Microworks.wsgi
